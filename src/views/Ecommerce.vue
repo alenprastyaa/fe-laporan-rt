@@ -161,13 +161,14 @@
     </div>
   </AdminLayout>
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import VueApexCharts from 'vue3-apexcharts'
+import { useRouter } from 'vue-router' // 1. Import useRouter
 import AdminLayout from '@/components/layout/AdminLayout.vue';
 
+// ... (Interface definitions tetap sama) ...
 interface RecentActivityItem {
   type: string;
   description: string;
@@ -188,6 +189,9 @@ interface WargaTunggakan {
   phone: string;
 }
 
+// 2. Inisialisasi router
+const router = useRouter()
+
 const isLoading = ref(false)
 const error = ref('')
 const stats = ref<StatsData>({
@@ -202,6 +206,7 @@ const recentActivity = ref<RecentActivityItem[]>([])
 const wargaBelumBayar = ref<WargaTunggakan[]>([])
 const monthlyIncome = ref(0)
 
+// ... (Series dan Chart Options tetap sama) ...
 const areaSeries = ref([
   { name: 'Pemasukan', data: [] as number[] },
   { name: 'Pengeluaran', data: [] as number[] }
@@ -270,6 +275,12 @@ const fetchData = async () => {
   error.value = ''
   try {
     const token = localStorage.getItem('token')
+
+    // Validasi token sebelum request
+    if (!token) {
+      throw new Error("No token found")
+    }
+
     const config = { headers: { Authorization: `Bearer ${token}` } }
     const currentMonthIndex = new Date().getMonth()
     const params = {
@@ -301,8 +312,20 @@ const fetchData = async () => {
     monthlyIncome.value = dStats.chart.pemasukan[currentMonthIndex] || 0
     recentActivity.value = recentRes.data
     wargaBelumBayar.value = belumBayarRes.data.data
-  } catch (err) {
+
+  } catch (err: any) {
+    // 3. Logika redirect jika error
+    console.error("Error fetching data:", err)
     error.value = "Gagal mengambil data dashboard."
+
+    // Opsional: Hapus token jika error adalah 401 (Unauthorized) supaya user bersih saat login ulang
+    if (axios.isAxiosError(err) && err.response?.status === 401) {
+      localStorage.removeItem('token')
+    }
+
+    // Redirect ke halaman signin
+    router.push('/signin')
+
   } finally {
     isLoading.value = false
   }
