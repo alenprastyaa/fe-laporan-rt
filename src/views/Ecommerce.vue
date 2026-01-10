@@ -279,9 +279,9 @@ const fetchData = async () => {
     }
 
     const [statsRes, recentRes, belumBayarRes] = await Promise.all([
-      axios.get('http://localhost:6500/api/dashboard/stats', config),
-      axios.get('http://localhost:6500/api/dashboard/recent', config),
-      axios.get('http://localhost:6500/api/kas/masuk/belum-bayar', { ...config, params })
+      axios.get('https://alentest.my.id/laporan/api/dashboard/stats', config),
+      axios.get('https://alentest.my.id/laporan/api/dashboard/recent', config),
+      axios.get('https://alentest.my.id/laporan/api/kas/masuk/belum-bayar', { ...config, params })
     ])
 
     const dStats = statsRes.data

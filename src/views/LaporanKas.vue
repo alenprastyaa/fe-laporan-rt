@@ -268,7 +268,7 @@
                                     <td class="p-4 text-sm text-gray-600 dark:text-gray-400">{{ new
                                         Date(item.tanggal_pengeluaran).toLocaleDateString('id-ID') }}</td>
                                     <td class="p-4 text-sm font-medium text-gray-800 dark:text-white">{{ item.keperluan
-                                        }}</td>
+                                    }}</td>
                                     <td class="p-4 text-sm font-bold text-red-600">{{
                                         formatRupiah(item.total_pengeluaran) }}</td>
                                     <td v-show="role === 'admin'" class="p-4 flex justify-center gap-2">
@@ -346,7 +346,7 @@
                             </div>
                         </div>
                         <div class="text-sm text-gray-500">Periode: {{ monthNames[filters.bulan - 1] }} {{ filters.tahun
-                            }}</div>
+                        }}</div>
                         <div class="flex gap-3 pt-2">
                             <button type="button" @click="showModalMasuk = false"
                                 class="flex-1 py-2 border rounded-lg text-gray-600 hover:bg-gray-50">Batal</button>
@@ -445,7 +445,7 @@ const formKeluar = reactive({ id: null, keperluan: '', tanggal_pengeluaran: '', 
 const fetchGlobalStats = async () => {
     try {
         const token = localStorage.getItem('token')
-        const res = await axios.get('http://localhost:6500/api/dashboard/stats', {
+        const res = await axios.get('https://alentest.my.id/laporan/api/dashboard/stats', {
             headers: { Authorization: `Bearer ${token}` }
         })
         if (res.data && res.data.cards) {
@@ -459,7 +459,7 @@ const fetchGlobalStats = async () => {
 const fetchUsers = async () => {
     try {
         const token = localStorage.getItem('token')
-        const res = await axios.get('http://localhost:6500/api/auth/users?role=user', {
+        const res = await axios.get('https://alentest.my.id/laporan/api/auth/users?role=user', {
             headers: { Authorization: `Bearer ${token}` }
         })
         if (res.data.status === 'success') userList.value = res.data.data
@@ -472,8 +472,8 @@ const fetchKasMasuk = async () => {
     isSelectAll.value = false
     const token = localStorage.getItem('token')
     const endpoint = activeSubTab.value === 'sudah'
-        ? 'http://localhost:6500/api/kas/masuk/sudah-bayar'
-        : 'http://localhost:6500/api/kas/masuk/belum-bayar'
+        ? 'https://alentest.my.id/laporan/api/kas/masuk/sudah-bayar'
+        : 'https://alentest.my.id/laporan/api/kas/masuk/belum-bayar'
 
     try {
         const res = await axios.get(endpoint, {
@@ -515,7 +515,7 @@ const fetchKasKeluar = async () => {
     loading.value = true
     const token = localStorage.getItem('token')
     try {
-        const res = await axios.get('http://localhost:6500/api/kas/keluar', {
+        const res = await axios.get('https://alentest.my.id/laporan/api/kas/keluar', {
             headers: { Authorization: `Bearer ${token}` },
             params: {
                 bulan: filters.bulan,
@@ -644,17 +644,17 @@ const submitMasuk = async () => {
                 periode: periode,
                 status: true
             }
-            await axios.post('http://localhost:6500/api/kas/masuk/bulk', payload, { headers: { Authorization: `Bearer ${token}` } })
+            await axios.post('https://alentest.my.id/laporan/api/kas/masuk/bulk', payload, { headers: { Authorization: `Bearer ${token}` } })
             Swal.fire('Sukses', 'Pembayaran massal berhasil!', 'success')
             selectedUsers.value = []
             isSelectAll.value = false
         } else if (formMasuk.id) {
             const payload = { ...formMasuk, periode, status: true }
-            await axios.put(`http://localhost:6500/api/kas/masuk/${formMasuk.id}`, payload, { headers: { Authorization: `Bearer ${token}` } })
+            await axios.put(`https://alentest.my.id/laporan/api/kas/masuk/${formMasuk.id}`, payload, { headers: { Authorization: `Bearer ${token}` } })
             Swal.fire('Sukses', 'Data berhasil diperbarui', 'success')
         } else {
             const payload = { ...formMasuk, periode, status: true }
-            await axios.post('http://localhost:6500/api/kas/masuk', payload, { headers: { Authorization: `Bearer ${token}` } })
+            await axios.post('https://alentest.my.id/laporan/api/kas/masuk', payload, { headers: { Authorization: `Bearer ${token}` } })
             Swal.fire('Sukses', 'Pembayaran berhasil dicatat', 'success')
         }
         showModalMasuk.value = false
@@ -686,10 +686,10 @@ const submitKeluar = async () => {
     const token = localStorage.getItem('token')
     try {
         if (formKeluar.id) {
-            await axios.put(`http://localhost:6500/api/kas/keluar/${formKeluar.id}`, formKeluar, { headers: { Authorization: `Bearer ${token}` } })
+            await axios.put(`https://alentest.my.id/laporan/api/kas/keluar/${formKeluar.id}`, formKeluar, { headers: { Authorization: `Bearer ${token}` } })
             Swal.fire('Sukses', 'Data diperbarui', 'success')
         } else {
-            await axios.post('http://localhost:6500/api/kas/keluar', formKeluar, { headers: { Authorization: `Bearer ${token}` } })
+            await axios.post('https://alentest.my.id/laporan/api/kas/keluar', formKeluar, { headers: { Authorization: `Bearer ${token}` } })
             Swal.fire('Sukses', 'Pengeluaran dicatat', 'success')
         }
         showModalKeluar.value = false
@@ -708,7 +708,7 @@ const deleteItem = async (type, id) => {
     })
     if (result.isConfirmed) {
         const token = localStorage.getItem('token')
-        const url = type === 'masuk' ? `http://localhost:6500/api/kas/masuk/${id}` : `http://localhost:6500/api/kas/keluar/${id}`
+        const url = type === 'masuk' ? `https://alentest.my.id/laporan/api/kas/masuk/${id}` : `https://alentest.my.id/laporan/api/kas/keluar/${id}`
         try {
             await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } })
             Swal.fire('Terhapus', 'Data berhasil dihapus', 'success')
