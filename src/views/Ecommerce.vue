@@ -95,7 +95,7 @@
                     <p class="text-xs text-gray-500">{{ warga.phone || 'No Phone' }}</p>
                   </div>
                 </div>
-                <button @click="sendWhatsAppReminder(warga)"
+                <button v-show="role == 'admin'" @click="sendWhatsAppReminder(warga)"
                   class="p-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path
@@ -134,7 +134,7 @@
                         <span v-else>↑</span>
                       </div>
                       <span class="text-sm font-medium text-gray-800 dark:text-white truncate">{{ item.description
-                      }}</span>
+                        }}</span>
                     </div>
                   </td>
 
@@ -167,6 +167,7 @@ import axios from 'axios'
 import VueApexCharts from 'vue3-apexcharts'
 import { useRouter } from 'vue-router' // 1. Import useRouter
 import AdminLayout from '@/components/layout/AdminLayout.vue';
+const role = localStorage.getItem('role')
 
 // ... (Interface definitions tetap sama) ...
 interface RecentActivityItem {
