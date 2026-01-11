@@ -17,12 +17,12 @@
         </div>
 
         <div class="flex items-center gap-3 w-full sm:w-auto">
-          <select v-model="selectedRole" @change="fetchUsers"
+          <!-- <select v-model="selectedRole" @change="fetchUsers"
             class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
             <option value="">Semua Role</option>
             <option value="admin">Admin</option>
             <option value="user">User</option>
-          </select>
+          </select> -->
 
           <button @click="openModal('add')"
             class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium">
@@ -141,8 +141,8 @@
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
               <select v-model="form.role"
                 class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-900 dark:border-gray-600 dark:text-white">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
+                <option value="user">warga</option>
+                <!-- <option value="admin">Admin</option> -->
               </select>
             </div>
             <div>
@@ -156,7 +156,7 @@
 
             <div class="pt-2 flex gap-3">
               <button type="button" @click="closeModal"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">Batal</button>
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium dark:text-white dark:hover:text-black">Batal</button>
               <button type="submit"
                 class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium shadow-lg shadow-blue-500/30">
                 {{ isSubmitting ? 'Menyimpan...' : 'Simpan' }}
@@ -169,7 +169,6 @@
     </div>
   </AdminLayout>
 </template>
-
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
@@ -192,19 +191,19 @@ const isEditMode = ref(false)
 const isSubmitting = ref(false)
 const editId = ref(null)
 
-// Form Data
+// Form Data - Update 1: Tambahkan properti rt
 const form = reactive({
   username: '',
   phone: '',
   role: 'user',
-  password: ''
+  password: '',
+  rt: ''
 })
 
-// --- API ACTIONS ---
-
-// 1. GET ALL USERS
 const fetchUsers = async () => {
   isLoading.value = true
+  const currentRt = localStorage.getItem('rt')
+
   try {
     const token = localStorage.getItem('token')
     const res = await axios.get('https://alentest.my.id/laporan/api/auth/users', {
@@ -213,7 +212,8 @@ const fetchUsers = async () => {
         page: pagination.currentPage,
         limit: pagination.limit,
         search: searchQuery.value,
-        role: selectedRole.value
+        role: selectedRole.value,
+        rt: currentRt
       }
     })
     if (res.data.status === 'success') {
@@ -233,6 +233,11 @@ const submitForm = async () => {
   isSubmitting.value = true
   const token = localStorage.getItem('token')
   const headers = { Authorization: `Bearer ${token}` }
+
+  // Pastikan RT terisi sebelum kirim (jaga-jaga jika terhapus)
+  if (!form.rt) {
+    form.rt = localStorage.getItem('rt')
+  }
 
   try {
     if (isEditMode.value) {
@@ -300,24 +305,24 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-// --- MODAL CONTROLS ---
-
 const openModal = (mode, data = null) => {
   isEditMode.value = mode === 'edit'
   showModal.value = true
+  const defaultRt = localStorage.getItem('rt') || ''
 
   if (mode === 'edit' && data) {
     editId.value = data.id
     form.username = data.username
     form.phone = data.phone
     form.role = data.role
-    form.password = '' // Password kosong saat edit (opsional diisi)
+    form.rt = data.rt || defaultRt
+    form.password = ''
   } else {
-    // Reset form untuk create
     form.username = ''
     form.phone = ''
     form.role = 'user'
     form.password = ''
+    form.rt = defaultRt
   }
 }
 

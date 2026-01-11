@@ -23,7 +23,7 @@
               fill="currentColor" />
           </svg>
         </button>
-        <p class=" dark:text-white font-semibold">Data laporan Rt 003 Rw 11</p>
+        <p class=" dark:text-white font-semibold">Data laporan Rt.{{ rt }}/Rw.011 Pal Merah</p>
         <HeaderLogo />
         <button @click="toggleApplicationMenu"
           class="flex items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-99999 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden">
@@ -66,6 +66,7 @@ const handleToggle = () => {
     toggleMobileSidebar()
   }
 }
+const rt = localStorage.getItem("rt")
 
 const dropdownOpen = ref(false)
 const notifying = ref(false)

@@ -134,7 +134,7 @@
                         <span v-else>↑</span>
                       </div>
                       <span class="text-sm font-medium text-gray-800 dark:text-white truncate">{{ item.description
-                        }}</span>
+                      }}</span>
                     </div>
                   </td>
 

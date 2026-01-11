@@ -152,6 +152,7 @@ const handleSubmit = async () => {
 
     // Simpan data ke localStorage
     localStorage.setItem('token', token)
+    localStorage.setItem('rt', user.rt)
     localStorage.setItem('role', user.role)
     localStorage.setItem('userId', user.id.toString())
     localStorage.setItem('username', user.username)

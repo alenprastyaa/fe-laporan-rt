@@ -1,11 +1,6 @@
 <template>
     <AdminLayout>
         <div class="space-y-2">
-            <!-- <div>
-                <h2 class="text-sm font-bold text-gray-800 dark:text-white">Laporan Kas RT</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Periode: {{ monthNames[filters.bulan - 1] }} {{
-                    filters.tahun }}</p>
-            </div> -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div
                     class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-between">
@@ -14,7 +9,6 @@
                             (Semua)</p>
                         <h3 class="text-xl font-bold text-green-600 mt-1">{{ formatRupiah(globalStats.pemasukan) }}</h3>
                     </div>
-
                 </div>
                 <div
                     class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-between">
@@ -23,7 +17,6 @@
                             (Semua)</p>
                         <h3 class="text-xl font-bold text-red-600 mt-1">{{ formatRupiah(globalStats.pengeluaran) }}</h3>
                     </div>
-
                 </div>
                 <div
                     class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-between">
@@ -31,13 +24,10 @@
                         <p class="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Saldo Akhir</p>
                         <h3 class="text-2xl font-bold text-blue-600 mt-1">{{ formatRupiah(globalStats.saldo) }}</h3>
                     </div>
-
                 </div>
             </div>
 
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-
-
                 <div class="bg-gray-100 dark:bg-gray-800 p-1 rounded-lg flex gap-1">
                     <button @click="changeMainTab('masuk')"
                         :class="['px-6 py-2 rounded-md text-sm font-medium transition-all', activeMainTab === 'masuk' ? 'bg-white dark:bg-gray-700 shadow text-blue-600 dark:text-blue-400' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400']">
@@ -54,7 +44,6 @@
                 class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 shadow-sm min-h-[500px]">
 
                 <div v-if="activeMainTab === 'masuk'" class="space-y-6">
-
                     <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
                         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                             <div class="relative w-full sm:w-48">
@@ -106,6 +95,7 @@
                     </div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Periode: {{ monthNames[filters.bulan - 1] }} {{
                         filters.tahun }}</p>
+
                     <div v-if="activeSubTab === 'belum'"
                         class="mb-4 flex items-center justify-between bg-blue-50 p-3 rounded-lg border border-blue-100 dark:bg-blue-900/20 dark:border-blue-800">
                         <div class="flex items-center gap-3 pl-2" v-show="role === 'admin'">
@@ -164,30 +154,30 @@
                                     <td class="p-4 text-right">
                                         <span v-if="activeSubTab === 'sudah'"
                                             class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">LUNAS</span>
-                                        <span v-else
-                                            class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">Belum
-                                            bayar
-                                        </span>
+                                        <span v-else class=" text-xs text-red-500">Belum bayar</span>
                                     </td>
                                     <td class="p-4 flex justify-center gap-2" v-show="role === 'admin'">
                                         <template v-if="activeSubTab === 'sudah'">
                                             <button @click="openModalMasuk('edit', item)"
-                                                class="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><svg
-                                                    class="w-4 h-4" fill="none" stroke="currentColor"
+                                                class="text-blue-500 hover:bg-blue-50 p-1.5 rounded">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2"
                                                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                                     </path>
-                                                </svg></button>
+                                                </svg>
+                                            </button>
                                             <button @click="deleteItem('masuk', item.id)"
-                                                class="text-red-500 hover:bg-red-50 p-1.5 rounded"><svg class="w-4 h-4"
-                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                class="text-red-500 hover:bg-red-50 p-1.5 rounded">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2"
                                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
                                                     </path>
-                                                </svg></button>
+                                                </svg>
+                                            </button>
                                         </template>
                                         <template v-else>
                                             <button @click="openModalMasuk('pay', item)"
@@ -201,7 +191,6 @@
                 </div>
 
                 <div v-if="activeMainTab === 'keluar'" class="space-y-6">
-
                     <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
                         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                             <div class="relative w-full sm:w-48">
@@ -273,19 +262,21 @@
                                         formatRupiah(item.total_pengeluaran) }}</td>
                                     <td v-show="role === 'admin'" class="p-4 flex justify-center gap-2">
                                         <button @click="openModalKeluar('edit', item)"
-                                            class="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><svg class="w-4 h-4"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            class="text-blue-500 hover:bg-blue-50 p-1.5 rounded">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                                 </path>
-                                            </svg></button>
+                                            </svg>
+                                        </button>
                                         <button @click="deleteItem('keluar', item.id)"
-                                            class="text-red-500 hover:bg-red-50 p-1.5 rounded"><svg class="w-4 h-4"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            class="text-red-500 hover:bg-red-50 p-1.5 rounded">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
                                                 </path>
-                                            </svg></button>
+                                            </svg>
+                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -306,7 +297,6 @@
                             class="px-3 py-1 text-sm border rounded hover:bg-gray-100 disabled:opacity-50 dark:text-white dark:hover:bg-blue-400">Next</button>
                     </div>
                 </div>
-
             </div>
 
             <div v-if="showModalMasuk"
@@ -336,20 +326,30 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Iuran Wajib</label>
-                                <input v-model="formMasuk.iuran_wajib" type="number"
-                                    class="w-full mt-1 p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <div class="relative mt-1">
+                                    <span
+                                        class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-400">Rp</span>
+                                    <input type="text" :value="formatInput(formMasuk.iuran_wajib)"
+                                        @input="(e) => handleCurrencyInput(e, formMasuk, 'iuran_wajib')"
+                                        class="w-full pl-10 p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                </div>
                             </div>
                             <div>
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Sukarela</label>
-                                <input v-model="formMasuk.iuran_bebas" type="number"
-                                    class="w-full mt-1 p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <div class="relative mt-1">
+                                    <span
+                                        class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-400">Rp</span>
+                                    <input type="text" :value="formatInput(formMasuk.iuran_bebas)"
+                                        @input="(e) => handleCurrencyInput(e, formMasuk, 'iuran_bebas')"
+                                        class="w-full pl-10 p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                </div>
                             </div>
                         </div>
                         <div class="text-sm text-gray-500">Periode: {{ monthNames[filters.bulan - 1] }} {{ filters.tahun
                         }}</div>
                         <div class="flex gap-3 pt-2">
                             <button type="button" @click="showModalMasuk = false"
-                                class="flex-1 py-2 border rounded-lg text-gray-600 hover:bg-gray-50">Batal</button>
+                                class="flex-1 py-2 border rounded-lg text-gray-600 hover:bg-gray-50 dark:text-white dark:hover:text-black">Batal</button>
                             <button type="submit"
                                 class="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Simpan</button>
                         </div>
@@ -378,13 +378,18 @@
                         </div>
                         <div>
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Biaya (Rp)</label>
-                            <input v-model="formKeluar.total_pengeluaran" type="number"
-                                class="w-full mt-1 p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                required>
+                            <div class="relative mt-1">
+                                <span
+                                    class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-400">Rp</span>
+                                <input type="text" :value="formatInput(formKeluar.total_pengeluaran)"
+                                    @input="(e) => handleCurrencyInput(e, formKeluar, 'total_pengeluaran')"
+                                    class="w-full pl-10 p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    required>
+                            </div>
                         </div>
                         <div class="flex gap-3 pt-2">
                             <button type="button" @click="showModalKeluar = false"
-                                class="flex-1 py-2 border rounded-lg text-gray-600 hover:bg-gray-50">Batal</button>
+                                class="flex-1 py-2 border rounded-lg text-gray-600 hover:bg-gray-50 dark:text-white dark:hover:text-black">Batal</button>
                             <button type="submit"
                                 class="flex-1 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">Simpan</button>
                         </div>
@@ -402,7 +407,6 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 
-// --- STATE ---
 const activeMainTab = ref('masuk')
 const activeSubTab = ref('sudah')
 const loading = ref(false)
@@ -434,13 +438,10 @@ const pagination = reactive({
 
 const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
 
-// Forms
 const showModalMasuk = ref(false)
 const showModalKeluar = ref(false)
 const formMasuk = reactive({ id: null, user_id: '', iuran_wajib: 10000, iuran_bebas: 0, status: true })
 const formKeluar = reactive({ id: null, keperluan: '', tanggal_pengeluaran: '', total_pengeluaran: 0 })
-
-// --- FETCH FUNCTIONS ---
 
 const fetchGlobalStats = async () => {
     try {
@@ -493,7 +494,6 @@ const fetchKasMasuk = async () => {
             pagination.totalPage = res.data.pagination.totalPage
             pagination.currentPage = res.data.pagination.currentPage
         } else {
-            // Fallback
             pagination.totalData = kasMasukList.value.length
             pagination.totalPage = 1
             pagination.currentPage = 1
@@ -532,7 +532,6 @@ const fetchKasKeluar = async () => {
             pagination.totalPage = res.data.pagination.totalPage
             pagination.currentPage = res.data.pagination.currentPage
         } else {
-            // Fallback
             pagination.totalData = kasKeluarList.value.length
             pagination.totalPage = 1
             pagination.currentPage = 1
@@ -550,8 +549,6 @@ const fetchKasKeluar = async () => {
         loading.value = false
     }
 }
-
-// --- HANDLERS ---
 
 const refreshData = () => {
     pagination.currentPage = 1
@@ -591,8 +588,6 @@ const changePage = (page) => {
     }
 }
 
-// --- CHECKLIST LOGIC ---
-
 const toggleSelectAll = () => {
     if (isSelectAll.value) {
         selectedUsers.value = kasMasukList.value.map(item => item.id)
@@ -600,8 +595,6 @@ const toggleSelectAll = () => {
         selectedUsers.value = []
     }
 }
-
-// --- MODAL & CRUD LOGIC (MASUK) ---
 
 const openModalBulk = () => {
     if (selectedUsers.value.length === 0) return Swal.fire('Info', 'Pilih minimal satu warga', 'info')
@@ -665,8 +658,6 @@ const submitMasuk = async () => {
     }
 }
 
-// --- MODAL & CRUD LOGIC (KELUAR) ---
-
 const openModalKeluar = (mode, item = null) => {
     showModalKeluar.value = true
     if (mode === 'edit' && item) {
@@ -700,8 +691,6 @@ const submitKeluar = async () => {
     }
 }
 
-// --- DELETE ---
-
 const deleteItem = async (type, id) => {
     const result = await Swal.fire({
         title: 'Yakin hapus data ini?', text: 'Data tidak dapat dikembalikan', icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Hapus'
@@ -722,6 +711,17 @@ const deleteItem = async (type, id) => {
 }
 
 const formatRupiah = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val)
+
+const formatInput = (val) => {
+    if (!val) return ''
+    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+}
+
+const handleCurrencyInput = (event, form, key) => {
+    let val = event.target.value.replace(/\D/g, '')
+    form[key] = val ? parseInt(val) : 0
+    event.target.value = formatInput(form[key])
+}
 
 onMounted(() => {
     fetchUsers()
