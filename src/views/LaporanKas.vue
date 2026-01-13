@@ -71,6 +71,15 @@
                         </div>
 
                         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto items-stretch">
+                            <button @click="downloadExcel" v-show="role == 'admin'"
+                                class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                Excel
+                            </button>
                             <div class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
                                 <button @click="changeSubTab('sudah')"
                                     :class="['px-3 py-1.5 text-xs font-medium rounded transition', activeSubTab === 'sudah' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 'text-gray-500']">Lunas</button>
@@ -120,6 +129,7 @@
                                     <th class="p-4">Periode</th>
                                     <th class="p-4" v-if="activeSubTab === 'sudah'">Wajib</th>
                                     <th class="p-4" v-if="activeSubTab === 'sudah'">Sukarela</th>
+                                    <th class="p-4" v-if="activeSubTab === 'sudah'">Penginput</th>
                                     <th class="p-4 text-right">Status</th>
                                     <th v-show="role === 'admin'" class="p-4 text-center">Aksi</th>
                                 </tr>
@@ -146,10 +156,12 @@
                                     <td class="p-4 text-sm text-gray-600 dark:text-gray-400">{{ monthNames[filters.bulan
                                         - 1] }} {{ filters.tahun }}</td>
                                     <template v-if="activeSubTab === 'sudah'">
-                                        <td class="p-4 text-sm font-medium text-green-600">{{
+                                        <td class="p-4 text-sm font-medium dark:text-green-400 text-green-700">{{
                                             formatRupiah(item.iuran_wajib) }}</td>
-                                        <td class="p-4 text-sm font-medium text-blue-600">{{
+                                        <td class="p-4 text-sm font-medium  dark:text-white">{{
                                             formatRupiah(item.iuran_bebas) }}</td>
+                                        <td class="p-4 text-sm font-medium dark:text-white">{{
+                                            item.nama_penginput }}</td>
                                     </template>
                                     <td class="p-4 text-right">
                                         <span v-if="activeSubTab === 'sudah'"
@@ -217,14 +229,25 @@
                             </div>
                         </div>
 
-                        <button v-show="role === 'admin'" @click="openModalKeluar('add')"
-                            class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Catat Pengeluaran
-                        </button>
+                        <div class="flex gap-2">
+                            <button @click="downloadExcel"
+                                class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                Excel
+                            </button>
+                            <button v-show="role === 'admin'" @click="openModalKeluar('add')"
+                                class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                Catat Pengeluaran
+                            </button>
+                        </div>
                     </div>
 
                     <div
@@ -241,6 +264,7 @@
                                     <th class="p-4">Tanggal</th>
                                     <th class="p-4">Keperluan</th>
                                     <th class="p-4">Nominal</th>
+                                    <th class="p-4">Penginput</th>
                                     <th v-show="role === 'admin'" class="p-4 text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -260,6 +284,8 @@
                                     }}</td>
                                     <td class="p-4 text-sm font-bold text-red-600">{{
                                         formatRupiah(item.total_pengeluaran) }}</td>
+                                    <td class="p-4 text-sm font-bold dark:text-white">{{
+                                        item.nama_penginput }}</td>
                                     <td v-show="role === 'admin'" class="p-4 flex justify-center gap-2">
                                         <button @click="openModalKeluar('edit', item)"
                                             class="text-blue-500 hover:bg-blue-50 p-1.5 rounded">
@@ -423,7 +449,7 @@ const totalKeluarSummary = ref(0)
 const globalStats = ref({ pemasukan: 0, pengeluaran: 0, saldo: 0 })
 let searchTimeout = null
 const role = localStorage.getItem('role')
-
+const username = localStorage.getItem('username')
 const filters = reactive({
     bulan: new Date().getMonth() + 1,
     tahun: new Date().getFullYear()
@@ -440,8 +466,8 @@ const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Jul
 
 const showModalMasuk = ref(false)
 const showModalKeluar = ref(false)
-const formMasuk = reactive({ id: null, user_id: '', iuran_wajib: 10000, iuran_bebas: 0, status: true })
-const formKeluar = reactive({ id: null, keperluan: '', tanggal_pengeluaran: '', total_pengeluaran: 0 })
+const formMasuk = reactive({ id: null, user_id: '', iuran_wajib: 10000, iuran_bebas: 0, status: true, nama_penginput: username })
+const formKeluar = reactive({ id: null, keperluan: '', tanggal_pengeluaran: '', total_pengeluaran: 0, nama_penginput: username })
 
 const fetchGlobalStats = async () => {
     try {
@@ -635,6 +661,7 @@ const submitMasuk = async () => {
                 iuran_wajib: formMasuk.iuran_wajib,
                 iuran_bebas: formMasuk.iuran_bebas,
                 periode: periode,
+                nama_penginput: localStorage.getItem('username'),
                 status: true
             }
             await axios.post('https://alentest.my.id/laporan/api/kas/masuk/bulk', payload, { headers: { Authorization: `Bearer ${token}` } })
@@ -707,6 +734,33 @@ const deleteItem = async (type, id) => {
         } catch (e) {
             Swal.fire('Gagal', 'Terjadi kesalahan', 'error')
         }
+    }
+}
+
+const downloadExcel = async () => {
+    try {
+        const token = localStorage.getItem('token')
+        const response = await axios.get('https://alentest.my.id/laporan/api/kas/download/excel', {
+            params: {
+                bulan: filters.bulan,
+                tahun: filters.tahun
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            responseType: 'blob'
+        })
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `Laporan_Keuangan_${filters.bulan}-${filters.tahun}.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+    } catch (error) {
+        console.error("Gagal download laporan:", error)
+        Swal.fire('Gagal', 'Gagal mengunduh laporan excel', 'error')
     }
 }
 

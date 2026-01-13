@@ -8,12 +8,14 @@
       </div>
 
       <div class="grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
+
         <div
           class="col-span-12 xl:col-span-8 rounded-2xl border border-gray-200 bg-white px-5 pb-5 pt-5 dark:border-gray-800 dark:bg-gray-900 sm:px-6 sm:pt-6">
           <div class="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
             <div class="w-full">
-              <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Statistik Keuangan</h3>
-              <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">Pemasukan vs Pengeluaran Tahun Ini</p>
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Statistik Arus Kas</h3>
+              <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">Grafik Pemasukan & Pengeluaran Tahun Ini
+              </p>
             </div>
           </div>
           <div class="max-w-full overflow-x-auto custom-scrollbar">
@@ -26,49 +28,58 @@
         <div
           class="col-span-12 xl:col-span-4 rounded-2xl border border-gray-200 bg-white px-5 pt-5 pb-11 dark:border-gray-800 dark:bg-gray-900 sm:px-6 sm:pt-6">
           <div class="mb-4">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Target Iuran Bulan Ini</h3>
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Kepatuhan Warga (Bulan Ini)</h3>
             <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-              Target: {{ formatCurrency(stats.total_warga * 10000) }} ({{ stats.total_warga }} Warga)
+              Total Warga: {{ stats.total_warga }} Orang
             </p>
           </div>
+
           <div class="relative max-h-[195px] mb-8">
             <div class="h-full flex justify-center">
-              <VueApexCharts type="radialBar" height="330" :options="radialChartOptions" :series="radialSeries" />
+              <VueApexCharts type="radialBar" height="330" :options="radialChartOptions" :series="complianceSeries" />
             </div>
           </div>
+
           <p class="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base mb-6">
-            Pemasukan bulan ini mencapai {{ formatCurrency(monthlyIncome) }}.
-            {{ radialSeries[0] >= 100 ? 'Target bulan ini telah tercapai!' : 'Ayo kumpulkan iuran tepat waktu!' }}
+            <span class="font-bold text-gray-800 dark:text-white">{{ wargaSudahBayar }}</span> warga telah membayar.
+            Tersisa <span class="font-bold text-red-500">{{ stats.warga_menunggak }}</span> warga yang belum lunas.
           </p>
-          <div class="flex items-center justify-center gap-5 px-6 py-3.5 border-t border-gray-100 dark:border-gray-800">
-            <div class="text-center">
-              <p class="mb-1 text-gray-500 text-xs dark:text-gray-400">Total Pemasukan</p>
-              <p class="text-base font-semibold text-gray-800 dark:text-white/90">{{
-                formatCurrency(stats.pemasukan_all_time) }}</p>
+
+          <div class="grid grid-cols-2 gap-4 border-t border-gray-100 dark:border-gray-800 pt-4">
+            <div class="text-center p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+              <p class="mb-1 text-blue-600 dark:text-blue-400 text-xs font-medium">Total Kas Wajib (Tahun Ini)</p>
+              <p class="text-sm font-bold text-gray-800 dark:text-white/90">
+                {{ formatCurrency(stats.pemasukan_wajib_tahun_ini) }}
+              </p>
             </div>
-            <div class="w-px bg-gray-200 h-8 dark:bg-gray-700"></div>
-            <div class="text-center">
-              <p class="mb-1 text-gray-500 text-xs dark:text-gray-400">Total Pengeluaran</p>
-              <p class="text-base font-semibold text-red-500">{{ formatCurrency(stats.pengeluaran_all_time) }}</p>
+            <div class="text-center p-2 rounded-lg bg-green-50 dark:bg-green-900/20">
+              <p class="mb-1 text-green-600 dark:text-green-400 text-xs font-medium">Total Sukarela (Tahun Ini)</p>
+              <p class="text-sm font-bold text-gray-800 dark:text-white/90">
+                {{ formatCurrency(stats.pemasukan_sukarela_tahun_ini) }}
+              </p>
             </div>
           </div>
         </div>
 
         <div class="col-span-12 xl:col-span-5 space-y-6">
           <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900 sm:p-6">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4">Sebaran Warga</h3>
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4">Status Pembayaran</h3>
             <div class="mt-4 space-y-3">
-              <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div class="flex items-center gap-3">
-                  <div class="w-2 h-2 rounded-full bg-blue-600"></div>
-                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Warga</span>
-                </div>
-                <span class="text-sm font-bold text-gray-900 dark:text-white">{{ stats.total_warga }} Orang</span>
+              <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-4">
+                <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: complianceSeries[0] + '%' }"></div>
               </div>
-              <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+
+              <div class="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div class="flex items-center gap-3">
+                  <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Sudah Bayar</span>
+                </div>
+                <span class="text-sm font-bold text-green-600">{{ wargaSudahBayar }} Orang</span>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
                 <div class="flex items-center gap-3">
                   <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Menunggak Bulan Ini</span>
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Menunggak</span>
                 </div>
                 <span class="text-sm font-bold text-red-500">{{ stats.warga_menunggak }} Orang</span>
               </div>
@@ -77,26 +88,28 @@
 
           <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900 sm:p-6">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Belum Bayar (Bulan Ini)</h3>
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Daftar Menunggak (Bulan Ini)</h3>
               <router-link to="/laporan-kas" class="text-xs text-blue-600 hover:underline">Lihat Semua</router-link>
             </div>
-            <div class="space-y-4">
-              <div v-if="wargaBelumBayar.length === 0" class="text-center py-4 text-sm text-gray-500">Semua warga sudah
-                bayar ✨</div>
+            <div class="space-y-4 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+              <div v-if="wargaBelumBayar.length === 0" class="text-center py-4 text-sm text-gray-500">
+                Semua warga sudah bayar ✨
+              </div>
               <div v-for="(warga, index) in wargaBelumBayar" :key="index"
                 class="flex items-center justify-between p-3 border border-gray-50 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
                 <div class="flex items-center gap-3">
                   <div
-                    class="h-9 w-9 rounded-full bg-red-100 dark:bg-red-900/20 text-red-600 flex items-center justify-center font-bold text-xs">
+                    class="h-9 w-9 rounded-full bg-red-100 dark:bg-red-900/20 text-red-600 flex items-center justify-center font-bold text-xs shrink-0">
                     {{ warga.username.charAt(0).toUpperCase() }}
                   </div>
-                  <div>
-                    <p class="text-sm font-semibold text-gray-800 dark:text-white">{{ warga.username }}</p>
-                    <p class="text-xs text-gray-500">{{ warga.phone || 'No Phone' }}</p>
+                  <div class="min-w-0">
+                    <p class="text-sm font-semibold text-gray-800 dark:text-white truncate">{{ warga.username }}</p>
+                    <p class="text-xs text-gray-500 truncate">{{ warga.phone || 'No Phone' }}</p>
                   </div>
                 </div>
                 <button v-show="role == 'admin'" @click="sendWhatsAppReminder(warga)"
-                  class="p-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                  class="p-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors shrink-0"
+                  title="Kirim Pengingat WA">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path
                       d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.246 2.248 3.484 5.232 3.484 8.412-.003 6.557-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.309 1.656zm6.29-4.464c1.56.925 3.278 1.411 5.037 1.413 5.564 0 10.091-4.527 10.093-10.093 0-2.696-1.05-5.231-2.956-7.138-1.907-1.907-4.442-2.956-7.137-2.956-5.566 0-10.093 4.527-10.093 10.094 0 1.896.536 3.717 1.548 5.301l-.95 3.468 3.558-.934zm11.333-7.391c-.302-.151-1.785-.881-2.062-.982-.277-.1-.478-.151-.68.151-.202.302-.782.982-.957 1.183-.176.202-.352.226-.654.076-.302-.151-1.274-.47-2.426-1.5-.897-.8-1.502-1.79-1.678-2.091-.176-.302-.019-.465.131-.614.136-.134.302-.352.453-.528.151-.176.202-.302.302-.503.1-.202.05-.377-.025-.528-.076-.151-.68-1.641-.932-2.244-.247-.587-.499-.508-.68-.517-.176-.008-.377-.01-.579-.01-.202 0-.528.076-.805.377-.277.302-1.057 1.031-1.057 2.515 0 1.485 1.082 2.92 1.232 3.121.151.202 2.13 3.253 5.159 4.561.72.311 1.282.496 1.719.635.722.23 1.38.197 1.9.12.58-.086 1.785-.73 2.037-1.435.252-.704.252-1.308.176-1.435-.076-.127-.277-.202-.579-.353z" />
@@ -133,12 +146,11 @@
                         <span v-if="item.type === 'masuk'">↓</span>
                         <span v-else>↑</span>
                       </div>
-                      <span class="text-sm font-medium text-gray-800 dark:text-white truncate">{{ item.description
-                        }}</span>
+                      <span
+                        class="text-sm font-medium text-gray-800 dark:text-white truncate max-w-[150px] sm:max-w-xs">{{
+                          item.description }}</span>
                     </div>
                   </td>
-
-
 
                   <td class="py-4 px-2 md:py-3">
                     <span class="text-xs font-medium px-3 py-1.5 rounded-full inline-block"
@@ -159,17 +171,35 @@
         </div>
       </div>
     </div>
+    <a href="https://wa.me/6281294233137" target="_blank"
+      class="fixed bottom-6 right-6 z-[9999] group flex items-center">
+      <span
+        class="mr-3 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm font-semibold rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0 pointer-events-none">
+        Chat Admin RT
+      </span>
+
+      <div
+        class="flex items-center justify-center w-10 h-10 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-2xl shadow-[0_8px_30px_rgb(37,211,102,0.4)] transition-all duration-300 hover:scale-105 active:scale-95">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+          <path
+            d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.246 2.248 3.484 5.232 3.484 8.412-.003 6.557-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.309 1.656zm6.29-4.464c1.56.925 3.278 1.411 5.037 1.413 5.564 0 10.091-4.527 10.093-10.093 0-2.696-1.05-5.231-2.956-7.138-1.907-1.907-4.442-2.956-7.137-2.956-5.566 0-10.093 4.527-10.093 10.094 0 1.896.536 3.717 1.548 5.301l-.95 3.468 3.558-.934zm11.333-7.391c-.302-.151-1.785-.881-2.062-.982-.277-.1-.478-.151-.68.151-.202.302-.782.982-.957 1.183-.176.202-.352.226-.654.076-.302-.151-1.274-.47-2.426-1.5-.897-.8-1.502-1.79-1.678-2.091-.176-.302-.019-.465.131-.614.136-.134.302-.352.453-.528.151-.176.202-.302.302-.503.1-.202.05-.377-.025-.528-.076-.151-.68-1.641-.932-2.244-.247-.587-.499-.508-.68-.517-.176-.008-.377-.01-.579-.01-.202 0-.528.076-.805.377-.277.302-1.057 1.031-1.057 2.515 0 1.485 1.082 2.92 1.232 3.121.151.202 2.13 3.253 5.159 4.561.72.311 1.282.496 1.719.635.722.23 1.38.197 1.9.12.58-.086 1.785-.73 2.037-1.435.252-.704.252-1.308.176-1.435-.076-.127-.277-.202-.579-.353z" />
+        </svg>
+      </div>
+    </a>
   </AdminLayout>
 </template>
+
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import VueApexCharts from 'vue3-apexcharts'
-import { useRouter } from 'vue-router' // 1. Import useRouter
+import { useRouter } from 'vue-router'
 import AdminLayout from '@/components/layout/AdminLayout.vue';
-const role = localStorage.getItem('role')
 
-// ... (Interface definitions tetap sama) ...
+const role = localStorage.getItem('role')
+const router = useRouter()
+
+// Interface Updated with separate Fields
 interface RecentActivityItem {
   type: string;
   description: string;
@@ -183,15 +213,15 @@ interface StatsData {
   pemasukan_all_time: number;
   pengeluaran_all_time: number;
   warga_menunggak: number;
+  // Field Baru dari Backend
+  pemasukan_wajib_tahun_ini: number;
+  pemasukan_sukarela_tahun_ini: number;
 }
 
 interface WargaTunggakan {
   username: string;
   phone: string;
 }
-
-// 2. Inisialisasi router
-const router = useRouter()
 
 const isLoading = ref(false)
 const error = ref('')
@@ -200,26 +230,38 @@ const stats = ref<StatsData>({
   saldo_akhir: 0,
   pemasukan_all_time: 0,
   pengeluaran_all_time: 0,
-  warga_menunggak: 0
+  warga_menunggak: 0,
+  pemasukan_wajib_tahun_ini: 0,
+  pemasukan_sukarela_tahun_ini: 0
 })
 
 const recentActivity = ref<RecentActivityItem[]>([])
 const wargaBelumBayar = ref<WargaTunggakan[]>([])
-const monthlyIncome = ref(0)
+const monthlyIncome = ref(0) // Masih dipakai untuk data chart series jika perlu
 
-// ... (Series dan Chart Options tetap sama) ...
+// Area Series (Line Chart Pemasukan vs Pengeluaran)
 const areaSeries = ref([
   { name: 'Pemasukan', data: [] as number[] },
   { name: 'Pengeluaran', data: [] as number[] }
 ])
 
-const radialSeries = computed(() => {
-  const target = stats.value.total_warga * 10000
-  if (target === 0) return [0]
-  const percent = (monthlyIncome.value / target) * 100
+// Computed: Jumlah Warga yang Sudah Bayar
+const wargaSudahBayar = computed(() => {
+  return Math.max(0, stats.value.total_warga - stats.value.warga_menunggak)
+})
+
+// Computed Series untuk Radial Chart (Persentase Orang yg Bayar)
+const complianceSeries = computed(() => {
+  const total = stats.value.total_warga
+  if (total === 0) return [0]
+
+  const paidCount = total - stats.value.warga_menunggak
+  const percent = (paidCount / total) * 100
+
   return [Math.min(parseFloat(percent.toFixed(1)), 100)]
 })
 
+// Options Chart
 const areaChartOptions = ref({
   legend: { show: true, position: 'top', horizontalAlign: 'left' },
   colors: ['#3C50E0', '#80CAEE'],
@@ -237,25 +279,26 @@ const areaChartOptions = ref({
 })
 
 const radialChartOptions = ref({
-  colors: ['#3C50E0'],
+  colors: ['#10B981'], // Warna Hijau untuk "Sudah Bayar"
   chart: { fontFamily: 'Satoshi, sans-serif', type: 'radialBar', height: 335 },
   plotOptions: {
     radialBar: {
       startAngle: -90,
       endAngle: 90,
-      hollow: { size: '70%' },
+      hollow: { size: '60%' },
       track: { background: '#E2E8F0', strokeWidth: '97%' },
       dataLabels: {
-        name: { show: false },
-        value: { offsetY: -5, fontSize: '36px', fontWeight: '600', color: '#1C2434' }
+        name: { show: true, label: 'Lunas', color: '#64748B', offsetY: 20 },
+        value: { offsetY: -20, fontSize: '30px', fontWeight: '600', color: '#1C2434' }
       }
     }
   },
   fill: { type: 'solid' },
   stroke: { lineCap: 'round' },
-  labels: ['Progress']
+  labels: ['Lunas']
 })
 
+// Helper Formatter
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -271,16 +314,13 @@ const sendWhatsAppReminder = (warga: WargaTunggakan) => {
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
 }
 
+// Fetch Data
 const fetchData = async () => {
   isLoading.value = true
   error.value = ''
   try {
     const token = localStorage.getItem('token')
-
-    // Validasi token sebelum request
-    if (!token) {
-      throw new Error("No token found")
-    }
+    if (!token) throw new Error("No token found")
 
     const config = { headers: { Authorization: `Bearer ${token}` } }
     const currentMonthIndex = new Date().getMonth()
@@ -297,12 +337,15 @@ const fetchData = async () => {
     ])
 
     const dStats = statsRes.data
+    // Update State dengan data baru termasuk Wajib & Sukarela
     stats.value = {
       total_warga: dStats.cards.total_warga,
       saldo_akhir: dStats.cards.saldo_akhir,
       pemasukan_all_time: dStats.cards.pemasukan_all_time,
       pengeluaran_all_time: dStats.cards.pengeluaran_all_time,
-      warga_menunggak: dStats.cards.warga_menunggak_bulan_ini
+      warga_menunggak: dStats.cards.warga_menunggak_bulan_ini,
+      pemasukan_wajib_tahun_ini: dStats.cards.pemasukan_wajib_tahun_ini,     // MAPPING BARU
+      pemasukan_sukarela_tahun_ini: dStats.cards.pemasukan_sukarela_tahun_ini // MAPPING BARU
     }
 
     areaSeries.value = [
@@ -315,18 +358,12 @@ const fetchData = async () => {
     wargaBelumBayar.value = belumBayarRes.data.data
 
   } catch (err: any) {
-    // 3. Logika redirect jika error
     console.error("Error fetching data:", err)
     error.value = "Gagal mengambil data dashboard."
-
-    // Opsional: Hapus token jika error adalah 401 (Unauthorized) supaya user bersih saat login ulang
     if (axios.isAxiosError(err) && err.response?.status === 401) {
       localStorage.removeItem('token')
     }
-
-    // Redirect ke halaman signin
     router.push('/signin')
-
   } finally {
     isLoading.value = false
   }
@@ -340,10 +377,15 @@ onMounted(() => {
 <style scoped>
 .custom-scrollbar::-webkit-scrollbar {
   height: 6px;
+  width: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
 </style>
