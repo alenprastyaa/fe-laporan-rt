@@ -63,6 +63,14 @@ const router = createRouter({
       },
     },
     {
+      path: '/kas-keluar',
+      name: 'Kas keluar',
+      component: () => import('../views/KasKeluar.vue'),
+      meta: {
+        title: 'kas keluar',
+      },
+    },
+    {
       path: '/line-chart',
       name: 'Line Chart',
       component: () => import('../views/Chart/LineChart/LineChart.vue'),

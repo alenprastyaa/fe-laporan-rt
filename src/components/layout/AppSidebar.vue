@@ -162,9 +162,9 @@ import {
   PlugInIcon,
 } from "../../icons";
 import SidebarWidget from "./SidebarWidget.vue";
-import BoxCubeIcon from "@/icons/BoxCubeIcon.vue";
 import { useSidebar } from "@/composables/useSidebar";
 import UserGroupIcon from "@/icons/UserGroupIcon.vue";
+import BoxIcon from "@/icons/BoxIcon.vue";
 
 const role = localStorage.getItem('role');
 const route = useRoute();
@@ -188,8 +188,18 @@ const menuGroups = [
       },
       {
         icon: CalenderIcon,
-        name: "Laporan Kas",
+        name: "Kas Masuk",
         path: "/laporan-kas",
+      },
+      {
+        icon: TableIcon,
+        name: "Kas Keluar",
+        path: "/kas-keluar",
+      },
+      {
+        icon: BoxIcon,
+        name: "Profil",
+        path: "/profile",
       },
     ],
   },

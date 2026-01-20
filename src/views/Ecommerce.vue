@@ -327,7 +327,6 @@ const fetchData = async () => {
     const params = {
       bulan: currentMonthIndex + 1,
       tahun: new Date().getFullYear(),
-      limit: 5
     }
 
     const [statsRes, recentRes, belumBayarRes] = await Promise.all([

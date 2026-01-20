@@ -115,7 +115,7 @@
       <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in-up">
         <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
           <h3 class="text-lg font-bold text-gray-800 dark:text-white">{{ isEditMode ? 'Edit User' : 'Tambah User Baru'
-            }}</h3>
+          }}</h3>
           <button @click="closeModal" class="text-gray-400 hover:text-gray-600"><svg class="w-6 h-6" fill="none"
               stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -202,7 +202,7 @@ const fetchUsers = async () => {
   isLoading.value = true
   try {
     const token = localStorage.getItem('token')
-    const res = await axios.get('https://alentest.my.id/laporan/api/auth/users', {
+    const res = await axios.get('http://alentest.my.id/laporan/api/auth/users', {
       headers: { Authorization: `Bearer ${token}` },
       params: {
         page: pagination.currentPage,
@@ -232,11 +232,11 @@ const submitForm = async () => {
   try {
     if (isEditMode.value) {
       // Logic UPDATE
-      await axios.put(`https://alentest.my.id/laporan/api/auth/users/${editId.value}`, form, { headers })
+      await axios.put(`http://alentest.my.id/laporan/api/auth/users/${editId.value}`, form, { headers })
       Swal.fire('Berhasil', 'Data user diperbarui', 'success')
     } else {
       // Logic CREATE
-      await axios.post('https://alentest.my.id/laporan/api/auth/users', form, { headers })
+      await axios.post('http://alentest.my.id/laporan/api/auth/users', form, { headers })
       Swal.fire('Berhasil', 'User baru ditambahkan', 'success')
     }
     closeModal()
@@ -264,7 +264,7 @@ const deleteUser = async (id) => {
   if (result.isConfirmed) {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`https://alentest.my.id/laporan/api/auth/users/${id}`, {
+      await axios.delete(`http://alentest.my.id/laporan/api/auth/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       Swal.fire('Terhapus!', 'User telah dihapus.', 'success')
