@@ -60,6 +60,24 @@
               </p>
             </div>
           </div>
+
+          <div class="mt-4 space-y-2 border-t border-gray-100 dark:border-gray-800 pt-4">
+            <div class="flex justify-between items-center p-2.5 rounded-lg bg-green-50 dark:bg-green-900/20">
+              <span class="text-xs font-medium text-green-700 dark:text-green-400">Total Pemasukan (Semua)</span>
+              <span class="text-sm font-bold text-green-700 dark:text-green-400">{{
+                formatCurrency(stats.pemasukan_all_time) }}</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-lg bg-red-50 dark:bg-red-900/20">
+              <span class="text-xs font-medium text-red-700 dark:text-red-400">Total Pengeluaran (Semua)</span>
+              <span class="text-sm font-bold text-red-700 dark:text-red-400">{{
+                formatCurrency(stats.pengeluaran_all_time) }}</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+              <span class="text-xl font-medium text-blue-700 dark:text-blue-400">Saldo Akhir</span>
+              <span class="text-xl font-bold text-blue-700 dark:text-blue-400">{{ formatCurrency(stats.saldo_akhir)
+              }}</span>
+            </div>
+          </div>
         </div>
 
         <div class="col-span-12 xl:col-span-5 space-y-6">
@@ -201,35 +219,34 @@ import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import VueApexCharts from 'vue3-apexcharts'
 import { useRouter } from 'vue-router'
-import AdminLayout from '@/components/layout/AdminLayout.vue';
+import AdminLayout from '@/components/layout/AdminLayout.vue'
 
-const role = localStorage.getItem('role') || 'admin' // Default admin jika null, bisa disesuaikan
+const role = localStorage.getItem('role') || 'admin'
 const router = useRouter()
 
 interface RecentActivityItem {
-  type: string;
-  description: string;
-  amount: number;
-  date: string;
+  type: string
+  description: string
+  amount: number
+  date: string
 }
 
 interface StatsData {
-  total_warga: number;
-  saldo_akhir: number;
-  pemasukan_all_time: number;
-  pengeluaran_all_time: number;
-  jumlah_warga_menunggak: number;
-  pemasukan_wajib_tahun_ini: number;
-  pemasukan_sukarela_tahun_ini: number;
-  pemasukan_total_tahun_ini: number;
+  total_warga: number
+  saldo_akhir: number
+  pemasukan_all_time: number
+  pengeluaran_all_time: number
+  jumlah_warga_menunggak: number
+  pemasukan_wajib_tahun_ini: number
+  pemasukan_sukarela_tahun_ini: number
+  pemasukan_total_tahun_ini: number
 }
 
-// Sesuaikan interface dengan response API (terdapat phone)
 interface WargaTunggakan {
-  username: string;
-  phone?: string; // Optional karena di JSON tunggakan tidak selalu ada, tapi perlu untuk WA
-  bulan_menunggak: string;
-  formatted_text: string;
+  username: string
+  phone?: string
+  bulan_menunggak: string
+  formatted_text: string
 }
 
 const isLoading = ref(false)
@@ -311,27 +328,20 @@ const formatCurrency = (value: number) => {
   }).format(value)
 }
 
-// Function Send WA dikembalikan
 const sendWhatsAppReminder = (warga: WargaTunggakan) => {
-  // Gunakan formatted_text jika ingin detail, atau buat pesan baru
-  // Fallback jika phone tidak ada di object tunggakan (sesuai respon API anda yang kadang tidak menyertakan phone di list tunggakan)
-  // Anda mungkin perlu memastikan API mengirim 'phone' di list tunggakan, 
-  // atau mengambil data detail user. Asumsi di sini property phone tersedia atau di handle.
-
   if (!warga.phone) {
     alert("Nomor telepon tidak tersedia untuk warga ini.")
     return
   }
 
-  const message = `Halo Bapak/Ibu ${warga.username}, kami mengingatkan mengenai tunggakan iuran kas warga untuk bulan: ${warga.bulan_menunggak}. Mohon segera melakukan pembayaran. Terima kasih.`;
+  const message = `Halo Bapak/Ibu ${warga.username}, kami mengingatkan mengenai tunggakan iuran kas warga untuk bulan: ${warga.bulan_menunggak}. Mohon segera melakukan pembayaran. Terima kasih.`
 
-  // Format nomor hp (hapus 0 depan ganti 62)
-  let phone = warga.phone.trim();
+  let phone = warga.phone.trim()
   if (phone.startsWith('0')) {
-    phone = '62' + phone.slice(1);
+    phone = '62' + phone.slice(1)
   }
 
-  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank')
 }
 
 const fetchData = async () => {
@@ -347,12 +357,8 @@ const fetchData = async () => {
     const data = response.data
 
     stats.value = data.cards
-
-    // Mapping data tunggakan (pastikan API mengirim phone jika ingin fitur WA jalan)
-    // Jika API list tunggakan tidak ada phone, fitur WA tidak akan jalan sempurna tanpa modifikasi API
     wargaBelumBayar.value = data.tunggakan
 
-    // Map Chart Data
     if (data.chart) {
       areaSeries.value = [
         { name: 'Pemasukan', data: data.chart.pemasukan || [] },
@@ -388,7 +394,6 @@ const fetchData = async () => {
     isLoading.value = false
   }
 }
-// add
 
 onMounted(() => {
   fetchData()
