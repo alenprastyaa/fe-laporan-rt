@@ -82,15 +82,16 @@
                                 <th class="p-4">Keperluan</th>
                                 <th class="p-4">Nominal</th>
                                 <th class="p-4">Penginput</th>
+                                <th class="p-4 text-center">Bukti</th>
                                 <th v-show="role === 'admin'" class="p-4 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                             <tr v-if="loading">
-                                <td colspan="5" class="p-6 text-center text-gray-500">Memuat data...</td>
+                                <td colspan="6" class="p-6 text-center text-gray-500">Memuat data...</td>
                             </tr>
                             <tr v-else-if="kasKeluarList.length === 0">
-                                <td colspan="5" class="p-6 text-center text-gray-500">Belum ada data pengeluaran.</td>
+                                <td colspan="6" class="p-6 text-center text-gray-500">Belum ada data pengeluaran.</td>
                             </tr>
                             <tr v-else v-for="item in kasKeluarList" :key="item.id"
                                 class="hover:bg-gray-50 dark:hover:bg-gray-800/30">
@@ -101,6 +102,18 @@
                                 <td class="p-4 text-sm font-bold text-red-600">{{ formatRupiah(item.total_pengeluaran)
                                 }}</td>
                                 <td class="p-4 text-sm font-bold dark:text-white">{{ item.nama_penginput }}</td>
+                                <td class="p-4 text-center">
+                                    <a v-if="item.img_nota" :href="item.img_nota" target="_blank" rel="noopener"
+                                        class="inline-flex items-center gap-1 text-blue-600 hover:underline text-xs font-medium">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
+                                        Lihat
+                                    </a>
+                                    <span v-else class="text-xs text-gray-400">-</span>
+                                </td>
                                 <td v-show="role === 'admin'" class="p-4 flex justify-center gap-2">
                                     <button @click="openModalKeluar('edit', item)"
                                         class="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><svg class="w-4 h-4"
@@ -165,11 +178,31 @@
                                     required>
                             </div>
                         </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Bukti / Nota</label>
+                            <div class="mt-1 flex items-center gap-3">
+                                <label
+                                    class="cursor-pointer flex items-center gap-2 px-3 py-2 border rounded-lg text-sm text-gray-600 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                        </path>
+                                    </svg>
+                                    {{ isUploadingBukti ? 'Mengupload...' : 'Pilih File' }}
+                                    <input type="file" accept="image/*" class="hidden" :disabled="isUploadingBukti"
+                                        @change="handleBuktiUpload">
+                                </label>
+                                <a v-if="formKeluar.img_nota" :href="formKeluar.img_nota" target="_blank"
+                                    rel="noopener" class="text-xs text-blue-600 hover:underline">Lihat file</a>
+                                <button v-if="formKeluar.img_nota" type="button" @click="formKeluar.img_nota = ''"
+                                    class="text-xs text-red-500 hover:underline">Hapus</button>
+                            </div>
+                        </div>
                         <div class="flex gap-3 pt-2">
                             <button type="button" @click="showModalKeluar = false"
                                 class="flex-1 py-2 border rounded-lg text-gray-600 hover:bg-gray-50 dark:text-white dark:hover:text-black">Batal</button>
-                            <button type="submit"
-                                class="flex-1 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">Simpan</button>
+                            <button type="submit" :disabled="isUploadingBukti"
+                                class="flex-1 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-60">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -207,7 +240,26 @@ const pagination = reactive({
 const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
 
 const showModalKeluar = ref(false)
-const formKeluar = reactive({ id: null, keperluan: '', tanggal_pengeluaran: '', total_pengeluaran: 0, nama_penginput: username })
+const isUploadingBukti = ref(false)
+const formKeluar = reactive({ id: null, keperluan: '', tanggal_pengeluaran: '', total_pengeluaran: 0, nama_penginput: username, img_nota: '' })
+
+const handleBuktiUpload = async (event) => {
+    const file = event.target.files[0]
+    if (!file) return
+
+    isUploadingBukti.value = true
+    try {
+        const fd = new FormData()
+        fd.append('file', file)
+        const res = await axios.post('https://upload-file.applicationservice.id/api/upload-file', fd)
+        formKeluar.img_nota = res.data?.data?.url || ''
+    } catch (e) {
+        Swal.fire('Gagal', 'Gagal mengupload bukti', 'error')
+    } finally {
+        isUploadingBukti.value = false
+        event.target.value = ''
+    }
+}
 
 const fetchKasKeluar = async () => {
     loading.value = true
@@ -275,11 +327,13 @@ const openModalKeluar = (mode, item = null) => {
         formKeluar.keperluan = item.keperluan
         formKeluar.tanggal_pengeluaran = item.tanggal_pengeluaran.split('T')[0]
         formKeluar.total_pengeluaran = item.total_pengeluaran
+        formKeluar.img_nota = item.img_nota || ''
     } else {
         formKeluar.id = null
         formKeluar.keperluan = ''
         formKeluar.tanggal_pengeluaran = new Date().toISOString().split('T')[0]
         formKeluar.total_pengeluaran = 0
+        formKeluar.img_nota = ''
     }
 }
 

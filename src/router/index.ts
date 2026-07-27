@@ -55,6 +55,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/superadmin',
+      name: 'Superadmin',
+      component: () => import('../views/Superadmin.vue'),
+      meta: {
+        title: 'Superadmin',
+        requiredRole: 'superadmin',
+      },
+    },
+    {
       path: '/laporan-kas',
       name: 'Laporan kas',
       component: () => import('../views/LaporanKas.vue'),
@@ -171,5 +180,11 @@ export default router
 
 router.beforeEach((to, from, next) => {
   document.title = `Laporan Data Rt 003 Rw 011`
+
+  const requiredRole = to.meta.requiredRole as string | undefined
+  if (requiredRole && localStorage.getItem('role') !== requiredRole) {
+    return next('/')
+  }
+
   next()
 })

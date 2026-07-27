@@ -201,6 +201,12 @@ const menuGroups = [
         name: "Profil",
         path: "/profile",
       },
+      {
+        icon: PieChartIcon,
+        name: "Superadmin",
+        path: "/superadmin",
+        requiredRole: "superadmin",
+      },
     ],
   },
 ];
